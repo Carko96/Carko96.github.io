@@ -1,0 +1,296 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Flask &mdash; Flask dokumentace 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Flask dokumentace 1.0.0 documentation" href="index.html" />
+    <link rel="prev" title="Flask" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="index.html" title="Flask"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Flask dokumentace 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="flask">
+<h1>Flask<a class="headerlink" href="#flask" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="minimalni-aplikace">
+<h2>Minimální aplikace<a class="headerlink" href="#minimalni-aplikace" title="Permalink to this headline">¶</a></h2>
+<p>Minimální aplikace může vypadat nějak takto:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s">&quot;Hello world&quot;</span>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Tento soubor můžeme uložit jako jméno.py (nikdy svou aplikaci nepojmenujte flask.py protože by tato aplikace konfliktovala se samotným Flaskem) a aplikaci spustíme. Po spuštění naší aplikace by se v konzoli mělo objevit:</p>
+<div class="highlight-python"><pre>* Running on http://127.0.0.1:5000/</pre>
+</div>
+<p>Nyní můžeme otevřít libovolný prohlížeč a dojít na adresu <a class="reference external" href="http://127.0.0.1:5000/">http://127.0.0.1:5000/</a> kde by jsme měli vidět náš nápis Hello world. Pokud je vše v pořádku server můžete zastavit stisknutím kláves control-c. Jestliže jste se dostali až sem, tak vás asi zajímá, co náš kód udělal.
+Nejdříve jsme importovali třídu Flask. Instance této třídy bude naše WSGI aplikace.
+Dále jsme vytvořily instanci této třídy. První argument je jméno modulu nebo balíčku naší aplikace. Pokud používáte jediný modul jako v tomto případě, tak je vždy správné použít <em>__name__</em>.
+Potom použijeme <em>route()</em> dekorátor abychom flasku řekli jaká URL adresa má spustit naši funkci.
+Funkci dáme jméno, které se také používá ke generování URL adres pro tuto konkrétní funkci, a vrátí zprávu, kterou chceme zobrazit v uživatelově prohlížeči.
+Konečně použijeme funkci <em>run()</em> k spuštění lokálního serveru s naší aplikací. <em>if __name__ == &#8220;__main__&#8221;:</em> zajišťuje že se server spustí jen tehdy pokud je skript spuštěn přímo z Python interpreteru a ne jako importovaný modul.</p>
+</div>
+<div class="section" id="debugovaci-mod">
+<h2>Debugovací mód<a class="headerlink" href="#debugovaci-mod" title="Permalink to this headline">¶</a></h2>
+<p>Pomocí run() metody spustíme náš server, ale pokaždé když provedeme změnu v našem kódu tak musíme manuálně restartovat server. Tohle je velice nešikovné a proto existuje debugovací mód. Pokud použijete tento mód server se sám obnoví při každé změně v kódu a jestli uděláte chybu v kódu tak vám zobrazí debugger. Zapnout debugger můžeme dvěma způsoby přitom oba mají stejný efekt:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">app</span><span class="o">.</span><span class="n">debug</span><span class="o">=</span><span class="bp">True</span>
+<span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Nebo takto:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="smerovani">
+<h2>Směrování<a class="headerlink" href="#smerovani" title="Permalink to this headline">¶</a></h2>
+<p>Moderní webové aplikace mají přehledné URL adresy. Toto pomáhá lidem,  aby si tyto adresy zapamatovaly což zvětšuje šanci, že se příště vrátí.
+Jak už jste si dříve mohli všimnout, route() dekorátor se používá k připojení funkce k URL adrese. Tady je pár příkladů:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s">&quot;Hello world&quot;</span>
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/welcome/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">welcome</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s">&quot;Welcome&quot;</span>
+</pre></div>
+</div>
+<p>URL pravidla Flasku jsou založeny na Werkzeug směrovacím modulu. Účel tohoto modulu je zajistit hezké a jedinečné URL adresy založené na základech položených Apachem a dřívějšími HTTP servery.
+Mezi těmito dvěma příklady je rozdíl:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/welcome&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">welcome</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s">&quot;Welcome&quot;</span>
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/welcome/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">welcome</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s">&quot;Welcome&quot;</span>
+</pre></div>
+</div>
+<p>Liší se lomítkem na konci URL. V prvním případě URL adresa na konci neobsahuje lomítko. Při pokusu o vstup na tuto adresu s lomítkem na konci vznikne error 404.
+V druhém případě URL adresa na konci obsahuje lomítko. Při pokusu o vstup na tuto adresu bez lomítka na konci způsobí to, že nás Flask přesměruje na adresu s lomítkem.
+Některé části URL adres můžeme udělat dynamické a připojit více pravidel k funkci.</p>
+<div class="section" id="pravidla-promennych">
+<h3>Pravidla proměnných<a class="headerlink" href="#pravidla-promennych" title="Permalink to this headline">¶</a></h3>
+<p>Přidání proměnných částí k URL adrese uděláme takto &lt;jméno_proměnné&gt;. Tato část se potom předá naší funkci jako klíčoví argument. Volitelně můžeme k této části přidat typ této proměnné &lt;typ: jméno_proměnné&gt;. Zde je pár příkladů:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/welcome/&lt;jmeno&gt;&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">welcome</span><span class="p">(</span><span class="n">jmeno</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s">&quot;Welcome </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span><span class="n">jmeno</span>
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/&lt;int:cislo1&gt;/&lt;int:cislo2&gt;&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">nasobeni</span><span class="p">(</span><span class="n">cislo1</span><span class="p">,</span><span class="n">cislo2</span><span class="p">):</span>
+    <span class="n">vysledek</span><span class="o">=</span><span class="n">cislo1</span><span class="o">*</span><span class="n">cislo2</span>
+    <span class="k">return</span> <span class="s">&quot;</span><span class="si">%i</span><span class="s"> * </span><span class="si">%i</span><span class="s"> = </span><span class="si">%i</span><span class="s">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">cislo1</span><span class="p">,</span><span class="n">cislo2</span><span class="p">,</span><span class="n">vysledek</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Existují následující typy:
+int – celá čísla
+float – desetinná čísla
+path – používá se pro cesty tudíž přijímá I lomítka</p>
+</div>
+<div class="section" id="vytvareni-url-adres">
+<h3>Vytváření URL adres<a class="headerlink" href="#vytvareni-url-adres" title="Permalink to this headline">¶</a></h3>
+<p>K vytvoření URL adresy pro specifickou funkci můžeme použít funkci url_for(). Tato funkce Příjme jméno funkce jako první argument a další klíčové argumenty odpovídající proměnné části pravidla URL. Neznámé proměnné části jsou připojeny k URL adrese jako dotazové parametry. Zde je příklad:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">url_for</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/ahoj&quot;</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span> <span class="k">pass</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/welcome/&lt;jmeno&gt;&quot;</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">welcome</span><span class="p">(</span><span class="n">jmeno</span><span class="p">):</span> <span class="k">pass</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">test_request_context</span><span class="p">():</span>
+<span class="gp">... </span> <span class="k">print</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&quot;hello_world&quot;</span><span class="p">)</span>
+<span class="gp">... </span> <span class="k">print</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&quot;welcome&quot;</span><span class="p">,</span> <span class="n">jmeno</span><span class="o">=</span><span class="s">&quot;Petr&quot;</span><span class="p">,</span> <span class="n">neznama</span><span class="o">=</span><span class="s">&quot;neco&quot;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">/ahoj</span>
+<span class="go">/welcome/Petr?neznama=neco</span>
+</pre></div>
+</div>
+<p>Je zde použita test_request_context() metoda. Tato metoda říká Flasku, aby se choval, jako kdyby zvládal požadavek i když s ním pracujeme pomocí Python shellu.</p>
+</div>
+<div class="section" id="http-metody">
+<h3>HTTP metody<a class="headerlink" href="#http-metody" title="Permalink to this headline">¶</a></h3>
+<p>HTTP používá různé metody pro přístup na URL adresy. Standardně route() odpovídá jen GET žádostem. Toto však můžeme změnit přidáním argumentu metod k route() dekorátoru. Zde je příklad:</p>
+<div class="highlight-python"><pre>@app.route('/login', methods=['GET', 'POST'])
+def login():
+if request.method == 'POST':
+login_user()
+else:
+show_form()</pre>
+</div>
+<p>HTTP metody říkají serveru, co chce klient dělat s požadovanou stránkou. Zde je několik běžných metod:<br />
+<strong>GET</strong> - Prohlížeč řekne serveru, aby dostal informace, které jsou uložené na této stránce a poslal je. Toto je nejpoužívanější metoda. <br />
+<strong>HEAD</strong> - Prohlížeč řekne serveru, aby dostal informace, ale chce jen hlavičku, ne obsah stránky. <br />
+<strong>POST</strong> - Prohlížeč řekne serveru, že chce na tuto adresu poslat nějakou novou informaci a to že server musí zajistit, aby se data uložila jen jednou. <br />
+<strong>PUT</strong> - Tato metoda je podobná POST metodě s tím rozdílem, že server může uložit informaci několikrát přepisováním starých hodnot víc než jednou. <br />
+<strong>DELETE</strong> - Odstraní informaci v daném místě. <br />
+<strong>OPTIONS</strong> - Poskytuje rychlou cestu pro klienta, jak zjistit které metody jsou podporovány touto URL adresou.</p>
+</div>
+</div>
+<div class="section" id="staticke-soubory">
+<h2>Statické soubory<a class="headerlink" href="#staticke-soubory" title="Permalink to this headline">¶</a></h2>
+<p>Dynamické webové aplikace také potřebují statické soubory. Zde jsou většinou CSS a JavaScript soubory a obrázky. Stačí vytvořit složku pojmenovanou static vedle naší Flask aplikace.
+Generování URL adres pro statické soubory se provádí takto:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">url_for</span><span class="p">(</span><span class="s">&quot;static&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s">&quot;script.js&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Aby vše fungovalo soubor musí být uložen ve složce static vedle naší aplikace static/script.js.
+Pokud chceme, aby se složka se statickými soubory jmenovala jinak, např. staticke_soubory. Musíme instanci třídy Flask přidat argument static_folder=&#8217;staticke_soubory&#8217;, který má z výchozího nastavení přiřazenou hodnotu static. Zde je příklad s přejmenovanou složkou i pro šablony:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">,</span> <span class="n">static_folder</span><span class="o">=</span><span class="s">&#39;staticke_soubory&#39;</span><span class="p">,</span> <span class="n">template_folder</span><span class="o">=</span><span class="s">&#39;sablony&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="renderovani-sablon">
+<h2>Renderování šablon<a class="headerlink" href="#renderovani-sablon" title="Permalink to this headline">¶</a></h2>
+<p>Generování HTML kódu v Pythonu je poněkud těžkopádné. Proto Flask používá šablonovací systém Jinja2.
+Pro renderování šablon používáme metodu render_tamplate(). Této metodě dáme jméno šablony a jména proměnných, které chceme předat šablonovacímu systému jako klíčové argumenty. Zde je příklad použití této metody:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">render_template</span>
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/welcome/&lt;jmeno&gt;&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">welcome</span><span class="p">(</span><span class="n">jmeno</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&quot;welcome.html&quot;</span><span class="p">,</span> <span class="n">jmeno</span><span class="o">=</span><span class="n">jmeno</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>Flask bude hledat šablonu ve složce templates vedle naší aplikace. Naše Flask aplikace by mohla vypadat takto: <br /></dt>
+<dd><p class="first">/aplikace.py <br />
+/templates</p>
+<blockquote class="last">
+<div>/welcome.html</div></blockquote>
+</dd>
+</dl>
+<p>Šablony jsou obzvlášť užitečné při použití dědění. Šablonové dědění umožňuje nechat některé elementy na každé stránce, jako hlavičku, navigaci a patičku. Tudíž stačí vytvořit základní šablonu se všemi elementy a nastavenými bloky, které můžou ostatní šablony rozšiřovat.</p>
+</div>
+<div class="section" id="pristupovani-k-pozadavkum">
+<h2>Přistupování k požadavkům<a class="headerlink" href="#pristupovani-k-pozadavkum" title="Permalink to this headline">¶</a></h2>
+<p>Pro webové aplikace je důležité, aby reagovali na data, které klient pošle serveru. K přistoupení k přicházejícím požadavkům použijeme globální objekt request. Flask pro nás analyzuje přicházející požadavek a dá nám k němu přístup skrz globální objekt. To, že objekt může být globální, umožňují místní kontexty.</p>
+<div class="section" id="objekt-request">
+<h3>Objekt request<a class="headerlink" href="#objekt-request" title="Permalink to this headline">¶</a></h3>
+<p>O objektu request jsem se již dříve zmiňoval. Zde je pár příkladů použití ale nejdříve ho musíme importovat:
+from flask import request
+Aktuální metoda požadavku je dostupná použitím atributu method. K přistoupení k datům formuláře můžeme použít atribut form. Zde je příklad obou výše zmíněných atributů:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@app.route</span><span class="p">(</span><span class="s">&quot;/log&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;GET&quot;</span><span class="p">,</span> <span class="s">&quot;POST&quot;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">log</span><span class="p">():</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s">&quot;username&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&quot;admin&quot;</span> <span class="ow">or</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s">&quot;password&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&#39;admin&#39;</span><span class="p">:</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="s">&quot;Invalid Credentials. Please try again&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">session</span><span class="p">[</span><span class="s">&quot;logged_in&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s">&quot;logok&quot;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s">&quot;log.html&quot;</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Jestli klíč atributu form neexistuje tak vám prohlížeč místo toho zobrazí chybovou stránku 400 Bad Request.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Flask</a><ul>
+<li><a class="reference internal" href="#minimalni-aplikace">Minimální aplikace</a></li>
+<li><a class="reference internal" href="#debugovaci-mod">Debugovací mód</a></li>
+<li><a class="reference internal" href="#smerovani">Směrování</a><ul>
+<li><a class="reference internal" href="#pravidla-promennych">Pravidla proměnných</a></li>
+<li><a class="reference internal" href="#vytvareni-url-adres">Vytváření URL adres</a></li>
+<li><a class="reference internal" href="#http-metody">HTTP metody</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#staticke-soubory">Statické soubory</a></li>
+<li><a class="reference internal" href="#renderovani-sablon">Renderování šablon</a></li>
+<li><a class="reference internal" href="#pristupovani-k-pozadavkum">Přistupování k požadavkům</a><ul>
+<li><a class="reference internal" href="#objekt-request">Objekt request</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Flask</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/code.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="index.html" title="Flask"
+             >previous</a> |</li>
+        <li><a href="index.html">Flask dokumentace 1.0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Hlavinka.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

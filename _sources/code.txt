@@ -1,0 +1,176 @@
+.. |br| raw:: html
+
+   <br />
+
+=====
+Flask
+=====
+
+Minimální aplikace
+==================
+Minimální aplikace může vypadat nějak takto:
+::
+    from flask import Flask
+    app = Flask(__name__)
+    @app.route("/")
+    def hello_world():
+        return "Hello world"
+    if __name__ == "__main__":
+        app.run()
+
+Tento soubor můžeme uložit jako jméno.py (nikdy svou aplikaci nepojmenujte flask.py protože by tato aplikace konfliktovala se samotným Flaskem) a aplikaci spustíme. Po spuštění naší aplikace by se v konzoli mělo objevit:
+::
+    * Running on http://127.0.0.1:5000/
+
+Nyní můžeme otevřít libovolný prohlížeč a dojít na adresu http://127.0.0.1:5000/ kde by jsme měli vidět náš nápis Hello world. Pokud je vše v pořádku server můžete zastavit stisknutím kláves control-c. Jestliže jste se dostali až sem, tak vás asi zajímá, co náš kód udělal. 
+Nejdříve jsme importovali třídu Flask. Instance této třídy bude naše WSGI aplikace.
+Dále jsme vytvořily instanci této třídy. První argument je jméno modulu nebo balíčku naší aplikace. Pokud používáte jediný modul jako v tomto případě, tak je vždy správné použít *__name__*.
+Potom použijeme *route()* dekorátor abychom flasku řekli jaká URL adresa má spustit naši funkci.
+Funkci dáme jméno, které se také používá ke generování URL adres pro tuto konkrétní funkci, a vrátí zprávu, kterou chceme zobrazit v uživatelově prohlížeči. 
+Konečně použijeme funkci *run()* k spuštění lokálního serveru s naší aplikací. *if __name__ == "__main__":* zajišťuje že se server spustí jen tehdy pokud je skript spuštěn přímo z Python interpreteru a ne jako importovaný modul.
+
+Debugovací mód
+==============
+Pomocí run() metody spustíme náš server, ale pokaždé když provedeme změnu v našem kódu tak musíme manuálně restartovat server. Tohle je velice nešikovné a proto existuje debugovací mód. Pokud použijete tento mód server se sám obnoví při každé změně v kódu a jestli uděláte chybu v kódu tak vám zobrazí debugger. Zapnout debugger můžeme dvěma způsoby přitom oba mají stejný efekt:
+::
+    app.debug=True
+    app.run()
+
+Nebo takto:
+::
+    app.run(debug=True)
+
+Směrování
+=========
+Moderní webové aplikace mají přehledné URL adresy. Toto pomáhá lidem,  aby si tyto adresy zapamatovaly což zvětšuje šanci, že se příště vrátí.
+Jak už jste si dříve mohli všimnout, route() dekorátor se používá k připojení funkce k URL adrese. Tady je pár příkladů:
+::
+    @app.route("/")
+    def hello_world():
+        return "Hello world"
+    @app.route("/welcome/")
+    def welcome():
+        return "Welcome"
+
+URL pravidla Flasku jsou založeny na Werkzeug směrovacím modulu. Účel tohoto modulu je zajistit hezké a jedinečné URL adresy založené na základech položených Apachem a dřívějšími HTTP servery.
+Mezi těmito dvěma příklady je rozdíl:
+::
+    @app.route("/welcome")
+    def welcome():
+        return "Welcome"
+    @app.route("/welcome/")
+    def welcome():
+        return "Welcome"
+
+Liší se lomítkem na konci URL. V prvním případě URL adresa na konci neobsahuje lomítko. Při pokusu o vstup na tuto adresu s lomítkem na konci vznikne error 404.
+V druhém případě URL adresa na konci obsahuje lomítko. Při pokusu o vstup na tuto adresu bez lomítka na konci způsobí to, že nás Flask přesměruje na adresu s lomítkem.
+Některé části URL adres můžeme udělat dynamické a připojit více pravidel k funkci.
+
+Pravidla proměnných
+-------------------
+Přidání proměnných částí k URL adrese uděláme takto <jméno_proměnné>. Tato část se potom předá naší funkci jako klíčoví argument. Volitelně můžeme k této části přidat typ této proměnné <typ: jméno_proměnné>. Zde je pár příkladů:
+::
+    @app.route("/welcome/<jmeno>")
+    def welcome(jmeno):
+        return "Welcome %s" %jmeno
+    @app.route("/<int:cislo1>/<int:cislo2>")
+    def nasobeni(cislo1,cislo2):
+        vysledek=cislo1*cislo2
+        return "%i * %i = %i" %(cislo1,cislo2,vysledek)
+
+Existují následující typy: 
+int – celá čísla
+float – desetinná čísla
+path – používá se pro cesty tudíž přijímá I lomítka  
+
+Vytváření URL adres
+-------------------
+K vytvoření URL adresy pro specifickou funkci můžeme použít funkci url_for(). Tato funkce Příjme jméno funkce jako první argument a další klíčové argumenty odpovídající proměnné části pravidla URL. Neznámé proměnné části jsou připojeny k URL adrese jako dotazové parametry. Zde je příklad:
+::
+    >>> from flask import Flask, url_for
+    >>> app = Flask(__name__)
+    >>> @app.route("/ahoj")
+    ... def hello_world(): pass
+    ... 
+    >>> @app.route("/welcome/<jmeno>")
+    ... def welcome(jmeno): pass
+    ... 
+    >>> with app.test_request_context():
+    ...  print url_for("hello_world")
+    ...  print url_for("welcome", jmeno="Petr", neznama="neco")
+    ... 
+    /ahoj
+    /welcome/Petr?neznama=neco 
+
+Je zde použita test_request_context() metoda. Tato metoda říká Flasku, aby se choval, jako kdyby zvládal požadavek i když s ním pracujeme pomocí Python shellu.
+
+HTTP metody
+-----------
+HTTP používá různé metody pro přístup na URL adresy. Standardně route() odpovídá jen GET žádostem. Toto však můžeme změnit přidáním argumentu metod k route() dekorátoru. Zde je příklad:
+::
+    @app.route('/login', methods=['GET', 'POST'])
+    def login():
+    if request.method == 'POST':
+    login_user()
+    else:
+    show_form()
+
+HTTP metody říkají serveru, co chce klient dělat s požadovanou stránkou. Zde je několik běžných metod:|br|
+**GET** - Prohlížeč řekne serveru, aby dostal informace, které jsou uložené na této stránce a poslal je. Toto je nejpoužívanější metoda. |br|
+**HEAD** - Prohlížeč řekne serveru, aby dostal informace, ale chce jen hlavičku, ne obsah stránky. |br|
+**POST** - Prohlížeč řekne serveru, že chce na tuto adresu poslat nějakou novou informaci a to že server musí zajistit, aby se data uložila jen jednou. |br|
+**PUT** - Tato metoda je podobná POST metodě s tím rozdílem, že server může uložit informaci několikrát přepisováním starých hodnot víc než jednou. |br|
+**DELETE** - Odstraní informaci v daném místě. |br|
+**OPTIONS** - Poskytuje rychlou cestu pro klienta, jak zjistit které metody jsou podporovány touto URL adresou.
+
+Statické soubory
+================
+Dynamické webové aplikace také potřebují statické soubory. Zde jsou většinou CSS a JavaScript soubory a obrázky. Stačí vytvořit složku pojmenovanou static vedle naší Flask aplikace.
+Generování URL adres pro statické soubory se provádí takto:
+::
+    url_for("static", filename="script.js")
+
+Aby vše fungovalo soubor musí být uložen ve složce static vedle naší aplikace static/script.js.
+Pokud chceme, aby se složka se statickými soubory jmenovala jinak, např. staticke_soubory. Musíme instanci třídy Flask přidat argument static_folder='staticke_soubory', který má z výchozího nastavení přiřazenou hodnotu static. Zde je příklad s přejmenovanou složkou i pro šablony:
+::
+    app = Flask(__name__, static_folder='staticke_soubory', template_folder='sablony')
+
+
+Renderování šablon
+==================
+Generování HTML kódu v Pythonu je poněkud těžkopádné. Proto Flask používá šablonovací systém Jinja2. 
+Pro renderování šablon používáme metodu render_tamplate(). Této metodě dáme jméno šablony a jména proměnných, které chceme předat šablonovacímu systému jako klíčové argumenty. Zde je příklad použití této metody:
+::
+    from flask import render_template
+    @app.route("/welcome/<jmeno>")
+    def welcome(jmeno):
+        return render_template("welcome.html", jmeno=jmeno)
+
+Flask bude hledat šablonu ve složce templates vedle naší aplikace. Naše Flask aplikace by mohla vypadat takto: |br|
+    /aplikace.py |br|
+    /templates
+        /welcome.html
+Šablony jsou obzvlášť užitečné při použití dědění. Šablonové dědění umožňuje nechat některé elementy na každé stránce, jako hlavičku, navigaci a patičku. Tudíž stačí vytvořit základní šablonu se všemi elementy a nastavenými bloky, které můžou ostatní šablony rozšiřovat.
+
+Přistupování k požadavkům
+=========================
+Pro webové aplikace je důležité, aby reagovali na data, které klient pošle serveru. K přistoupení k přicházejícím požadavkům použijeme globální objekt request. Flask pro nás analyzuje přicházející požadavek a dá nám k němu přístup skrz globální objekt. To, že objekt může být globální, umožňují místní kontexty.
+
+Objekt request
+--------------
+O objektu request jsem se již dříve zmiňoval. Zde je pár příkladů použití ale nejdříve ho musíme importovat:
+from flask import request
+Aktuální metoda požadavku je dostupná použitím atributu method. K přistoupení k datům formuláře můžeme použít atribut form. Zde je příklad obou výše zmíněných atributů:
+::
+    @app.route("/log", methods=["GET", "POST"])
+    def log():
+        error = None
+        if request.method == 'POST':
+            if request.form["username"] != "admin" or request.form["password"] != 'admin':
+                error = "Invalid Credentials. Please try again"
+            else:
+                session["logged_in"] = True
+                return redirect(url_for("logok"))
+        return render_template("log.html", error=error)
+
+Jestli klíč atributu form neexistuje tak vám prohlížeč místo toho zobrazí chybovou stránku 400 Bad Request.
